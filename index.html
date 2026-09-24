@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Save the Date — Kathrin & Philipp</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background: #37493a;
+  }
+  #stage {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+  }
+
+  /* Desktop: play the video/finale in a centered half-width column instead of full-bleed */
+  @media (min-width: 900px) {
+    #stage {
+      left: 50%;
+      right: auto;
+      top: 0;
+      bottom: 0;
+      width: 50vw;
+      transform: translateX(-50%);
+      box-shadow: 0 0 80px rgba(0, 0, 0, 0.45);
+    }
+  }
+
+  /* --- Poster (Standbild) --- */
+  #poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    z-index: 3;
+    transition: opacity 0.5s ease;
+  }
+  #poster::after { content: ""; }
+  #hint {
+    position: absolute;
+    left: 50%;
+    bottom: 6%;
+    transform: translateX(-50%);
+    z-index: 4;
+    color: #fff;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 15px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+    opacity: 0.9;
+    animation: pulse 2s ease-in-out infinite;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  #hint.hidden {
+    animation: none;
+    opacity: 0 !important;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+  }
+
+  /* --- Video --- */
+  #video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  #video.visible { opacity: 1; z-index: 5; }
+  #video.fading-out { opacity: 0; transition: opacity 2.2s ease-in-out; }
+
+  /* --- Finale Save-the-Date Seite --- */
+  #finale {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #ece9e2;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 2.2s ease-in-out;
+    overflow: hidden;
+  }
+  #finale.visible { opacity: 1; z-index: 6; pointer-events: auto; }
+  #finale img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <img id="poster" src="assets/poster.jpg" alt="Video Standbild – zum Abspielen tippen">
+  <div id="hint">Öffne mich</div>
+
+  <video id="video" src="assets/video.mp4" playsinline preload="auto"></video>
+
+  <div id="finale">
+    <img src="assets/finale.png" alt="Save the Date – 25. September 2027 – Kathrin &amp; Philipp">
+  </div>
+</div>
+
+<script>
+  const poster = document.getElementById('poster');
+  const hint = document.getElementById('hint');
+  const video = document.getElementById('video');
+  const finale = document.getElementById('finale');
+  let started = false;
+
+  function startVideo() {
+    if (started) return;
+    started = true;
+    poster.style.opacity = '0';
+    hint.classList.add('hidden');
+    video.classList.add('visible');
+    video.currentTime = 0;
+    video.play().catch(() => {});
+  }
+
+  document.getElementById('stage').addEventListener('click', startVideo);
+  document.getElementById('stage').addEventListener('touchend', function(e){
+    e.preventDefault();
+    startVideo();
+  }, { passive: false });
+
+  video.addEventListener('ended', function () {
+    finale.classList.add('visible');
+    video.classList.add('fading-out');
+  });
+</script>
+
+</body>
+</html>
